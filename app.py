@@ -20,17 +20,20 @@ app = Flask(__name__)
 app = Flask(__name__)
 
 @app.route('/')
-@app.route('/first')
+@app.route('/first.html')
 def first():
     return render_template('first.html')
-@app.route('/login')
+@app.route('/login.html')
 def login():
     return render_template('login.html')
 def home():
 	return render_template('home.html')
-@app.route('/upload')
+@app.route('/index.html')
+def index():
+    return render_template('index.html')
+@app.route('/upload.html')
 def upload():
-    return render_template('upload.html')  
+    return render_template('index.html')  
 @app.route('/preview',methods=["POST"])
 def preview():
     if request.method == 'POST':
@@ -44,7 +47,7 @@ def preview():
 def prediction1():
     return render_template('index.html')
 
-@app.route('/chart')
+@app.route('/chart.html')
 def chart():
     return render_template('chart.html')
 
@@ -58,7 +61,7 @@ def detect():
     v5 = int(request.form.get("category"))
     v6 = float(request.form.get("card_number"))
     dob = pd.to_datetime(request.form.get("dob"))
-    v7 = np.round((trans_datetime - dob) // np.timedelta64(1, 'Y'))
+    v7 = np.round((trans_datetime - dob).days / 365)
     v8 = float(request.form.get("trans_amount"))
     v9 = int(request.form.get("state"))
     v10 = int(request.form.get("zip"))
@@ -66,9 +69,10 @@ def detect():
     y_pred = model.predict(scaler.transform([x_test]))
     if y_pred[0][0] <= 0.5:
         result = "VALID TRANSACTION"
+        return render_template('result.html', OUTPUT=result)
     else:
         result = "FRAUD TRANSACTION"
-    return render_template('result.html', OUTPUT=result)
+        return render_template("otpverification.html")
 
 if __name__ == "__main__":
     app.run()

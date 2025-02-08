@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- EmailJS Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        // Initialize EmailJS
+        emailjs.init("Ipydskq9r0wpijgf6"); // Replace with your actual public key
+    </script>
+</head>
+
+<body class="h-screen bg-cover bg-center" style="background-image: url('https://source.unsplash.com/random/1600x900/?technology');">
+    <div class="h-screen flex justify-center items-center bg-gray-900 bg-opacity-50">
+        <div class="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+            <div id="first" class="flex flex-col gap-4">
+                <h1 class="text-2xl font-bold text-center text-gray-800">Email Verification</h1>
+                <p class="text-center text-gray-600">Please enter your email to receive an OTP.</p>
+
+                <label for="email" class="text-gray-700 font-medium">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email" required class="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+
+                <button onclick="sendEmail()" class="w-full bg-blue-500 text-white font-bold py-2 rounded-lg hover:bg-blue-600">Send OTP</button>
+            </div>
+
+            <div id="otp-section" class="hidden flex flex-col gap-4 mt-6">
+                <h2 class="text-xl font-bold text-center text-gray-800">Verify OTP</h2>
+                <p class="text-center text-gray-600">Enter the OTP sent to your email.</p>
+
+                <label for="otp-input" class="text-gray-700 font-medium">OTP</label>
+                <input type="text" id="otp-input" placeholder="Enter OTP" class="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+
+                <button onclick="verifyOTP()" class="w-full bg-green-500 text-white font-bold py-2 rounded-lg hover:bg-green-600">Verify OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let generatedOTP;
+
+        function sendEmail() {
+            const first = document.getElementById('first');
+            const email = document.getElementById("email").value;
+
+            if (!email) {
+                alert("Please enter a valid email!");
+                return;
+            }
+
+            // Generate a 4-digit OTP
+            generatedOTP = Math.floor(1000 + Math.random() * 9000);
+
+            // Send the email using EmailJS
+            emailjs.send("service_rlgafl3", "template_49o3km9", {
+                email: email,       // This should match the placeholder in the EmailJS template
+                otp: generatedOTP,  // Ensure that {{otp}} is used in your EmailJS template
+            }).then(
+                (response) => {
+                    console.log("SUCCESS!", response.status, response.text);
+                    alert(`OTP sent to ${email}`);
+                    first.style.display = 'none';
+                    document.getElementById("otp-section").classList.remove("hidden");
+                },
+                (error) => {
+                    console.error("FAILED...", error);
+                    alert("Failed to send OTP. Please try again.");
+                }
+            );
+        }
+
+        function verifyOTP() {
+            const otpInput = document.getElementById("otp-input").value;
+
+            if (otpInput == generatedOTP) {
+                alert("Email Verified Successfully! Your payment is being transferred");
+            } else {
+                alert("Invalid OTP. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
